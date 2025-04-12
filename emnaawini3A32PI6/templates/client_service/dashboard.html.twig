@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard Client{% endblock %}
+
+{% block body %}
+    <h1>Dashboard Client</h1>
+
+    <h3>Statistiques</h3>
+    <ul>
+        <li>Prix moyen : {{ statistics.average_price }} €</li>
+        <li>Prix médian : {{ statistics.median_price }} €</li>
+        <li>Écart-type : {{ statistics.standard_deviation }}</li>
+        <li>Taux d'utilisation moyen : {{ statistics.average_utilization_rate }}%</li>
+        <li>Catégorie la plus populaire : {{ statistics.most_popular_category }}</li>
+    </ul>
+
+    <h3>Tendances</h3>
+    <ul>
+        {% for trend in trends %}
+            <li>{{ trend.nom }} : {{ trend.current_rate }}% ({{ trend.trend }}) - Prix suggéré : {{ trend.recommended_price_adjustment }} €</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ path('client_services') }}" class="btn btn-primary">Retour aux Services</a>
+{% endblock %}

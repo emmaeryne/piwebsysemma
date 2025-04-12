@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Liste des utilisateurs{% endblock %}
+
+{% block body %}
+    <h1>Liste des utilisateurs</h1>
+
+    <a href="{{ path('users_new') }}">Créer un nouvel utilisateur</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nom d'utilisateur</th>
+                <th>Email</th>
+                <th>Rôle</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for users in users %}
+                <tr>
+                    <td>{{ users.id }}</td>
+                    <td>{{ users.username }}</td>
+                    <td>{{ users.email }}</td>
+                    <td>{{ users.role }}</td>
+                    <td>
+                        <a href="{{ path('users_show', {'id': users.id}) }}">Voir</a>
+                        <a href="{{ path('users_edit', {'id': users.id}) }}">Modifier</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

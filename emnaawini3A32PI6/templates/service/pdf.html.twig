@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{{ service.nom }} - Fiche Service</title>
+    <style>
+        /* Styles spécifiques pour le PDF */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            font-size: 12pt;
+            color: #333;
+            line-height: 1.4;
+            padding: 2cm; /* Marges pour l'impression */
+        }
+        h1 {
+            font-size: 24pt;
+            color: #2c3e50;
+            margin-bottom: 0.5cm;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 0.2cm;
+        }
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1cm;
+        }
+        .detail-table td {
+            padding: 0.3cm 0.5cm;
+            vertical-align: top;
+        }
+        .label {
+            font-weight: bold;
+            width: 30%;
+            color: #2c3e50;
+        }
+        .value {
+            width: 70%;
+        }
+        .status-active {
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .status-inactive {
+            color: #c0392b;
+            font-weight: bold;
+        }
+        .image-container {
+            text-align: center;
+            margin-top: 1cm;
+        }
+        .service-image {
+            max-width: 8cm;
+            height: auto;
+        }
+        .footer {
+            position: fixed;
+            bottom: 1cm;
+            left: 2cm;
+            right: 2cm;
+            text-align: center;
+            font-size: 10pt;
+            color: #777;
+            border-top: 1px solid #ddd;
+            padding-top: 0.2cm;
+        }
+        @page {
+            margin: 2cm; /* Marges globales du PDF */
+        }
+    </style>
+</head>
+<body>
+    {# En-tête #}
+    <h1>{{ service.nom|title }}</h1>
+
+    {# Détails du service sous forme de tableau #}
+    <table class="detail-table">
+        <tr>
+            <td class="label">Description :</td>
+            <td class="value">{{ service.description|default('Aucune description') }}</td>
+        </tr>
+        <tr>
+            <td class="label">Prix :</td>
+            <td class="value">{{ service.prix|number_format(2, ',', ' ') }} €</td>
+        </tr>
+        <tr>
+            <td class="label">Catégorie :</td>
+            <td class="value">{{ service.categorie|default('Non catégorisé') }}</td>
+        </tr>
+        <tr>
+            <td class="label">Capacité maximale :</td>
+            <td class="value">{{ service.capaciteMax|default('Non spécifiée') }}</td>
+        </tr>
+        <tr>
+            <td class="label">Durée :</td>
+            <td class="value">{{ service.dureeMinutes|default('Non définie') }} minutes</td>
+        </tr>
+        <tr>
+            <td class="label">Niveau :</td>
+            <td class="value">{{ service.niveau|default('Non spécifié') }}</td>
+        </tr>
+        <tr>
+            <td class="label">Actif :</td>
+            <td class="value">
+                <span class="{{ service.estActif ? 'status-active' : 'status-inactive' }}">
+                    {{ service.estActif ? 'Oui' : 'Non' }}
+                </span>
+            </td>
+        </tr>
+    </table>
+
+    {# Image #}
+    {% if service.image %}
+        <div class="image-container">
+            <img src="{{ absolute_url(asset('uploads/images/' ~ service.image)) }}" alt="{{ service.nom }}" class="service-image">
+        </div>
+    {% endif %}
+
+    {# Pied de page #}
+    <div class="footer">
+        Généré le {{ 'now'|date('d/m/Y H:i') }} - Page {{ '{{page}}' }}/{{ '{{pages}}' }}
+    </div>
+</body>
+</html>

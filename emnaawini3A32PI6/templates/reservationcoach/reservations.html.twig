@@ -1,0 +1,213 @@
+{# templates/coach/reservations.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Espace coach{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        {# Header Section #}
+        <div class="d-flex justify-content-between align-items-center mb-4 animate__animated animate__fadeIn">
+            <h1 class="text-primary fw-bold display-5">Espace coach</h1>
+            <span class="badge bg-info text-white px-3 py-2 rounded-pill">
+                <i class="bi bi-clock me-1"></i> {{ "now"|date("d/m/Y H:i") }}
+            </span>
+        </div>
+
+        {# Search Form #}
+        <form method="get" action="{{ path('app_coach_reservations') }}" class="mb-4" id="searchForm">
+            <div class="input-group shadow-sm rounded-3 animate__animated animate__fadeInUp">
+                <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+                <input type="text" 
+                       name="search" 
+                       value="{{ search|default('') }}" 
+                       class="form-control border-0 py-2" 
+                       placeholder="Rechercher par nom d'abonnement" 
+                       aria-label="Rechercher des abonnements" 
+                       id="searchInput">
+                <button type="submit" class="btn btn-primary px-4" aria-label="Lancer la recherche">
+                    <i class="bi bi-search me-1"></i> Rechercher
+                </button>
+                <button type="button" 
+                        class="btn btn-outline-danger px-3" 
+                        onclick="document.getElementById('searchInput').value=''; this.form.submit();"
+                        aria-label="Effacer la recherche">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+        </form>
+
+        {# Action Buttons #}
+        <div class="d-flex flex-wrap gap-3 mb-5 animate__animated animate__fadeInUp animate__delay-1s">
+            <a href="{{ path('app_coach_reservations_refresh') }}" 
+               class="btn btn-outline-secondary shadow-sm px-4 py-2" 
+               id="refreshBtn">
+                <i class="bi bi-arrow-repeat me-1"></i> Actualiser
+            </a>
+            <a href="{{ path('app_coach_reservations_export') }}" 
+               class="btn btn-success shadow-sm px-4 py-2" 
+               title="Télécharger les données au format Excel">
+                <i class="bi bi-file-earmark-excel-fill me-1"></i> Exporter en Excel
+            </a>
+        </div>
+
+        {# Flash Messages #}
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label }} alert-dismissible fade show shadow-sm mb-4 animate__animated animate__fadeIn" role="alert">
+                    <i class="bi bi-{{ label == 'success' ? 'check-circle-fill' : label == 'danger' ? 'exclamation-triangle-fill' : 'info-circle-fill' }} me-2"></i>
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fermer"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {# Reservations Table #}
+        <div class="card shadow-lg rounded-3 overflow-hidden animate__animated animate__fadeInUp animate__delay-2s">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center py-3">
+                <h5 class="mb-0 fw-semibold">Liste des Réservations</h5>
+                <span class="badge bg-secondary rounded-pill px-3 py-1">{{ reservations|length }} abonnements</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle mb-0">
+                        <thead class="table-dark sticky-top">
+                            <tr>
+                                <th scope="col" class="sortable py-3" data-sort="subscriptionName">
+                                    Nom de l'Abonnement
+                                    <span class="sort-indicator ms-2"></span>
+                                </th>
+                                <th scope="col" class="text-center sortable py-3" data-sort="clientCount">
+                                    Nombre de Clients
+                                    <span class="sort-indicator ms-2"></span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="reservationTableBody">
+                            {% if reservations is not empty %}
+                                {% for reservation in reservations %}
+                                    <tr class="animate__animated animate__fadeIn animate__delay-3s">
+                                        <td class="py-3">{{ reservation.subscriptionName }}</td>
+                                        <td class="text-center fw-medium py-3">{{ reservation.clientCount }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="2" class="text-muted text-center py-5">
+                                        <i class="bi bi-emoji-neutral me-2 fs-3"></i> Aucune réservation trouvée.
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        {# Loading Spinner #}
+        <div id="loading" class="text-center mt-4 d-none">
+            <div class="spinner-border text-primary" role="status" style="width: 3rem; height: 3rem;">
+                <span class="visually-hidden">Chargement...</span>
+            </div>
+            <p class="text-muted mt-2 fs-5">Chargement des données...</p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Show loading spinner during actions
+        const showLoading = () => document.getElementById('loading').classList.remove('d-none');
+        const hideLoading = () => document.getElementById('loading').classList.add('d-none');
+
+        // Form submission and refresh button
+        document.getElementById('searchForm').addEventListener('submit', showLoading);
+        document.getElementById('refreshBtn').addEventListener('click', showLoading);
+
+        // Client-side sorting
+        const tableBody = document.getElementById('reservationTableBody');
+        const sortables = document.querySelectorAll('.sortable');
+        
+        sortables.forEach(th => {
+            th.addEventListener('click', () => {
+                const sortKey = th.dataset.sort;
+                const rows = Array.from(tableBody.querySelectorAll('tr'));
+                const isAscending = th.classList.toggle('asc');
+
+                rows.sort((a, b) => {
+                    const aValue = sortKey === 'clientCount' 
+                        ? parseInt(a.cells[1].textContent) 
+                        : a.cells[0].textContent.toLowerCase();
+                    const bValue = sortKey === 'clientCount' 
+                        ? parseInt(b.cells[1].textContent) 
+                        : b.cells[0].textContent.toLowerCase();
+                    
+                    return isAscending 
+                        ? (aValue > bValue ? 1 : -1) 
+                        : (aValue < bValue ? 1 : -1);
+                });
+
+                rows.forEach(row => tableBody.appendChild(row));
+                sortables.forEach(s => s !== th && s.classList.remove('asc', 'desc'));
+                th.classList.add(isAscending ? 'asc' : 'desc');
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.3s ease;
+        }
+        .sortable:hover {
+            background-color: #495057 !important;
+        }
+        .sortable.asc .sort-indicator::after { content: ' ↑'; }
+        .sortable.desc .sort-indicator::after { content: ' ↓'; }
+        .sortable .sort-indicator::after {
+            content: ' ⇅';
+            font-size: 0.9em;
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .sortable:hover .sort-indicator::after {
+            opacity: 1;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #e9ecef;
+            transition: background-color 0.3s ease;
+        }
+        .table-dark {
+            background-color: #212529;
+            border-bottom: 2px solid #343a40;
+        }
+        .shadow-sm {
+            box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075) !important;
+        }
+        .shadow-lg {
+            box-shadow: 0 1rem 3rem rgba(0,0,0,0.175) !important;
+        }
+        .sticky-top {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .card-header {
+            font-size: 1.25rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .btn {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15) !important;
+        }
+    </style>
+{% endblock %}

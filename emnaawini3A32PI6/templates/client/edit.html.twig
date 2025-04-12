@@ -1,0 +1,144 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'Modification'|trans }}{% endblock %}
+
+{% block body %}
+    <div class="container mt-5 animate__animated animate__fadeIn">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-md-10">
+                <div class="card shadow-lg border-0" style="border-radius: 1rem;">
+                    <div class="card-header text-white" style="background: linear-gradient(135deg, #007bff, #00d4ff); border-radius: 1rem 1rem 0 0;">
+                        <h1 class="h4 mb-0">
+                            <i class="bi bi-calendar-check me-2"></i>{{ 'Modification'|trans }}
+                        </h1>
+                    </div>
+                    <div class="card-body p-4">
+                        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': ''}}) }}
+                            <div class="row g-4">
+                                <!-- Subscription Type -->
+                                <div class="col-12">
+                                    <div class="form-floating position-relative">
+                                        {{ form_widget(form.typeAbonnement, {'attr': {'class': 'form-select', 'placeholder': ' ', 'data-bs-toggle': 'tooltip', 'title': 'type de labonnement.tooltip'|trans}}) }}
+                                        {{ form_label(form.typeAbonnement, 'type de labonnement'|trans, {'label_attr': {'class': 'form-label'}}) }}
+                                        {% if form_errors(form.typeAbonnement) %}
+                                            <div class="invalid-feedback d-block animate__animated animate__shakeX">
+                                                <i class="bi bi-exclamation-circle me-1"></i>{{ form_errors(form.typeAbonnement) }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Start Date -->
+                                <div class="col-md-6">
+                                    <div class="form-floating position-relative">
+                                        {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control', 'placeholder': ' ', 'data-bs-toggle': 'tooltip', 'title': 'Date_de debut.tooltip'|trans}}) }}
+                                        {{ form_label(form.dateDebut, 'Date de debut'|trans, {'label_attr': {'class': 'form-label'}}) }}
+                                        {% if form_errors(form.dateDebut) %}
+                                            <div class="invalid-feedback d-block animate__animated animate__shakeX">
+                                                <i class="bi bi-exclamation-circle me-1"></i>{{ form_errors(form.dateDebut) }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- End Date -->
+                                <div class="col-md-6">
+                                    <div class="form-floating position-relative">
+                                        {{ form_widget(form.dateFin, {'attr': {'class': 'form-control', 'placeholder': ' ', 'data-bs-toggle': 'tooltip', 'title': 'Date de fin.tooltip'|trans}}) }}
+                                        {{ form_label(form.dateFin, 'Date de fin'|trans, {'label_attr': {'class': 'form-label'}}) }}
+                                        {% if form_errors(form.dateFin) %}
+                                            <div class="invalid-feedback d-block animate__animated animate__shakeX">
+                                                <i class="bi bi-exclamation-circle me-1"></i>{{ form_errors(form.dateFin) }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+
+                                <!-- Status -->
+                                <div class="col-12">
+                                    <div class="form-floating position-relative">
+                                        {{ form_widget(form.statut, {'attr': {'class': 'form-select', 'placeholder': ' ', 'data-bs-toggle': 'tooltip', 'title': 'statut.tooltip'|trans}}) }}
+                                        {{ form_label(form.statut, 'statut'|trans, {'label_attr': {'class': 'form-label'}}) }}
+                                        {% if form_errors(form.statut) %}
+                                            <div class="invalid-feedback d-block animate__animated animate__shakeX">
+                                                <i class="bi bi-exclamation-circle me-1"></i>{{ form_errors(form.statut) }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="mt-5 d-flex justify-content-end gap-3">
+                                <button type="submit" class="btn btn-primary btn-lg shadow-sm animate__animated animate__pulse animate__infinite" style="border-radius: 0.5rem;">
+                                    <i class="bi bi-save me-2"></i>{{ 'save'|trans }}
+                                </button>
+                                <a href="{{ path('app_client_reservation_index') }}" class="btn btn-outline-secondary btn-lg shadow-sm" style="border-radius: 0.5rem;">
+                                    <i class="bi bi-x-circle me-2"></i>{{ 'cancel'|trans }}
+                                </a>
+                            </div>
+                        {{ form_end(form) }}
+                    </div>
+                    <div class="card-footer text-muted text-center py-3" style="border-radius: 0 0 1rem 1rem;">
+                        <small>{{ 'hive by beeu'|trans }} 
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        .form-floating .form-control, .form-floating .form-select {
+            border-radius: 0.5rem;
+            height: calc(3.5rem + 2px);
+            transition: all 0.3s ease;
+        }
+        .form-floating .form-control:focus, .form-floating .form-select:focus {
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+        }
+        .form-floating label {
+            padding: 1rem 0.75rem;
+            color: #495057;
+            transition: all 0.2s ease;
+        }
+        .invalid-feedback {
+            font-size: 0.875rem;
+            color: #dc3545;
+            margin-top: 0.25rem;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #007bff, #00d4ff);
+            border: none;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #0056b3, #0096cc);
+        }
+        .btn-outline-secondary:hover {
+            background-color: #f8f9fa;
+        }
+        .card {
+            background: #fff;
+            transition: transform 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Enable Bootstrap tooltips
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sélectionner les types d'abonnements à importer{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="mb-4 text-primary">
+            <i class="fas fa-file-import me-2"></i> Sélectionner les types d'abonnements à importer
+        </h1>
+
+        {# Messages flash avec icônes #}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success fade show d-flex align-items-center shadow-sm" role="alert">
+                <i class="fas fa-check-circle me-2 text-success"></i> {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger fade show d-flex align-items-center shadow-sm" role="alert">
+                <i class="fas fa-exclamation-circle me-2 text-danger"></i> {{ message }}
+            </div>
+        {% endfor %}
+
+        {# Formulaire de sélection #}
+        <form method="post" action="{{ path('app_type_abonnement_select_import') }}">
+            <div class="table-responsive shadow-sm rounded">
+                <table class="table table-striped table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col" class="py-3"><i class="fas fa-check-square me-2"></i> Sélectionner</th>
+                            <th scope="col" class="py-3"><i class="fas fa-tag me-2"></i> Nom</th>
+                            <th scope="col" class="py-3"><i class="fas fa-euro-sign me-2"></i> Prix</th>
+                            <th scope="col" class="py-3"><i class="fas fa-clock me-2"></i> Durée (mois)</th>
+                            <th scope="col" class="py-3"><i class="fas fa-star me-2"></i> Premium</th>
+                            <th scope="col" class="py-3"><i class="fas fa-percent me-2"></i> Réduction (%)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if abonnements|length > 0 %}
+                            {% for index, abonnement in abonnements %}
+                                <tr>
+                                    <td class="align-middle">
+                                        <input type="checkbox" name="abonnements[]" value="{{ index }}" class="form-check-input">
+                                    </td>
+                                    <td class="align-middle">{{ abonnement.nom|slice(0, 30) ~ (abonnement.nom|length > 30 ? '...' : '') }}</td>
+                                    <td class="align-middle">{{ abonnement.prix }} €</td>
+                                    <td class="align-middle">{{ abonnement.dureeEnMois }}</td>
+                                    <td class="align-middle">
+                                        {% if abonnement.isPremium %}
+                                            <span class="badge bg-success rounded-pill"><i class="fas fa-check me-1"></i> Oui</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary rounded-pill"><i class="fas fa-times me-1"></i> Non</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="align-middle">{{ abonnement.reduction ? abonnement.reduction ~ '%' : '-' }}</td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="6" class="text-center py-4 text-muted">
+                                    <i class="fas fa-exclamation-triangle me-2 text-warning"></i> Aucun type d'abonnement trouvé dans le fichier.
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+
+            {# Boutons d'action #}
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ path('app_type_abonnement_index') }}" class="btn btn-secondary shadow-sm">
+                    <i class="fas fa-arrow-left me-2"></i> Retour
+                </a>
+                {% if abonnements|length > 0 %}
+                    <button type="submit" class="btn btn-primary shadow-sm">
+                        <i class="fas fa-check me-2"></i> Importer les abonnements sélectionnés
+                    </button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    {# Script pour les alertes temporisées #}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                document.querySelectorAll('.alert').forEach(alert => alert.classList.remove('show'));
+            }, 5000);
+        });
+    </script>
+{% endblock %}

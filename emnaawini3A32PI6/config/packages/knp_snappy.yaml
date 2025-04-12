@@ -1,0 +1,10 @@
+# config/packages/knp_snappy.yaml
+knp_snappy:
+    pdf:
+        enabled:    true
+        binary:     '"C:\Users\MSI\Desktop\wkhtmltopdf\bin\wkhtmltopdf.exe"' # Chemin complet avec guillemets
+        options:    []
+    image:
+        enabled:    true
+        binary:     '"C:\Users\MSI\Desktop\wkhtmltopdf\bin\wkhtmltoimage.exe"' # Chemin complet avec guillemets
+        options:    []
